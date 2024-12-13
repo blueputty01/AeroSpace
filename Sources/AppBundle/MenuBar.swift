@@ -66,7 +66,7 @@ public func menuBar(viewModel: TrayMenuModel) -> some Scene {
 
 struct menuLabel: View {
     var viewModel: TrayMenuModel
-    
+
     var body: some View {
         let renderer = ImageRenderer(content: imageContent)
         if let cgImage = renderer.cgImage {
@@ -79,7 +79,7 @@ struct menuLabel: View {
             Text(viewModel.trayText)
         }
     }
-    
+
     // I used a height that's twice as large as what I want and then use a scale of 2 to make the images look smoother
     private var imageContent: some View {
         HStack(spacing: 4) {
