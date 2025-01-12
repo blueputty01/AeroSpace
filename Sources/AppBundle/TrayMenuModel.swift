@@ -8,6 +8,7 @@ public class TrayMenuModel: ObservableObject {
 
     @Published var trayText: String = ""
     @Published var trayItems: [TrayItem] = []
+    @Published var isFullscreen: Bool = false
     /// Is "layouting" enabled
     @Published var isEnabled: Bool = true
     @Published var workspaces: [WorkspaceViewModel] = []
@@ -33,7 +34,7 @@ func updateTrayText() {
         let monitor = $0.isVisible || !$0.isEffectivelyEmpty ? " - \($0.workspaceMonitor.name)" : ""
         return WorkspaceViewModel(name: $0.name, suffix: monitor, isFocused: focus.workspace == $0)
     }
-    
+    TrayMenuModel.shared.isFullscreen = focus.windowOrNil?.isFullscreen ?? false
     TrayMenuModel.shared.trayItems = items
 }
 

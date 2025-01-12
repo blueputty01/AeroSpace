@@ -32,13 +32,13 @@ public func menuBar(viewModel: TrayMenuModel) -> some Scene {
         Button("Open config in '\(editor.lastPathComponent)'") {
             let fallbackConfig: URL = FileManager.default.homeDirectoryForCurrentUser.appending(path: configDotfileName)
             switch findCustomConfigUrl() {
-                case .file(let url):
-                    url.open(with: editor)
-                case .noCustomConfigExists:
-                    _ = try? FileManager.default.copyItem(atPath: defaultConfigUrl.path, toPath: fallbackConfig.path)
-                    fallbackConfig.open(with: editor)
-                case .ambiguousConfigError:
-                    fallbackConfig.open(with: editor)
+            case .file(let url):
+                url.open(with: editor)
+            case .noCustomConfigExists:
+                _ = try? FileManager.default.copyItem(atPath: defaultConfigUrl.path, toPath: fallbackConfig.path)
+                fallbackConfig.open(with: editor)
+            case .ambiguousConfigError:
+                fallbackConfig.open(with: editor)
             }
         }.keyboardShortcut("O", modifiers: .command)
         if viewModel.isEnabled {
@@ -53,7 +53,9 @@ public func menuBar(viewModel: TrayMenuModel) -> some Scene {
     } label: {
         if viewModel.isEnabled {
             menuLabel(viewModel: viewModel)
-                .id("\(viewModel.workspaces.hashValue)\(viewModel.trayItems.hashValue)")
+                .id(
+                    "\(viewModel.workspaces.hashValue)\(viewModel.trayItems.hashValue)\(viewModel.isFullscreen.hashValue)"
+                )
         } else {
             Image(systemName: "pause.rectangle.fill")
                 .resizable()
@@ -77,7 +79,7 @@ struct menuLabel: View {
             Text(viewModel.trayText)
         }
     }
-
+    
     // I used a height that's twice as large as what I want and then use a scale of 2 to make the images look smoother
     private var imageContent: some View {
         HStack(spacing: 4) {
@@ -87,6 +89,11 @@ struct menuLabel: View {
                     .font(.system(.largeTitle, design: .monospaced))
                     .bold()
             case .image, .full:
+                if (viewModel.isFullscreen) {
+                    Text("F")
+                        .font(.system(.largeTitle, design: .monospaced))
+                        .bold()
+                }
                 ForEach(viewModel.trayItems, id:\.name) { item in
                     Image(systemName: item.systemImageName)
                         .resizable()
@@ -138,5 +145,5 @@ extension String {
 func getTextEditorToOpenConfig() -> URL {
     NSWorkspace.shared.urlForApplication(toOpen: findCustomConfigUrl().urlOrNil ?? defaultConfigUrl)?
         .takeIf { $0.lastPathComponent != "Xcode.app" } // Blacklist Xcode. It is too heavy to open plain text files
-        ?? URL(filePath: "/System/Applications/TextEdit.app")
+    ?? URL(filePath: "/System/Applications/TextEdit.app")
 }
