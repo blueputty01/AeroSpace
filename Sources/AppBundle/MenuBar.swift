@@ -55,7 +55,9 @@ public func menuBar(viewModel: TrayMenuModel) -> some Scene {
             menuLabel(viewModel: viewModel)
                 .id("\(viewModel.workspaces.hashValue)\(viewModel.trayItems.hashValue)")
         } else {
-            Text("⏸️")
+            Image(systemName: "pause.rectangle.fill")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
         }
     }
 }
