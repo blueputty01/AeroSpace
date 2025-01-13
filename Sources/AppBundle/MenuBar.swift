@@ -70,7 +70,7 @@ struct menuLabel: View {
     var body: some View {
         let renderer = ImageRenderer(content: imageContent)
         if let cgImage = renderer.cgImage {
-            Image(cgImage, scale: 2, label: Text(viewModel.trayText))
+            Image(cgImage, scale: 1, label: Text(viewModel.trayText))
                 .renderingMode(.template)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
@@ -86,13 +86,13 @@ struct menuLabel: View {
             switch config.menuBarStyle {
             case .text:
                 Text(viewModel.trayText)
-                    .font(.system(.largeTitle, design: .monospaced))
+                    .font(.system(.headline, design: .monospaced))
                     .bold()
             case .image, .full:
                 if (viewModel.isFullscreen) {
                     Text("F")
-                        .font(.system(.largeTitle, design: .monospaced))
-                        .bold()
+//                        .font(.system(.headline, design: .monospaced))
+//                        .bold()
                 }
                 ForEach(viewModel.trayItems, id:\.name) { item in
                     Image(systemName: item.systemImageName)
@@ -106,23 +106,23 @@ struct menuLabel: View {
                     }
                     if !otherWorkspaces.isEmpty {
                         Text("|")
-                            .font(.system(.largeTitle, design: .monospaced))
-                            .bold()
-                            .opacity(0.7)
-                            .padding(.bottom, 2)
+//                            .font(.system(.headline, design: .monospaced))
+//                            .bold()
+//                            .opacity(0.7)
+//                            .padding(.bottom, 2)
                         ForEach(otherWorkspaces, id:\.name) { item in
                             Text(item.name)
-                                .font(.system(.largeTitle, design: .monospaced))
-                                .bold()
-                                .opacity(0.7)
-                                .id(item.name)
-                                .padding(.trailing, 2)
+//                                .font(.system(.headline, design: .monospaced))
+//                                .bold()
+//                                .opacity(0.7)
+//                                .id(item.name)
+//                                .padding(.trailing, 2)
                         }
                     }
                 }
             }
         }
-        .frame(height: 40)
+        .frame(height: 20)
     }
 }
 
