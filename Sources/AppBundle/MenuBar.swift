@@ -85,14 +85,10 @@ struct menuLabel: View {
         HStack(spacing: 4) {
             switch config.menuBarStyle {
             case .text:
-                Text(viewModel.trayText)
-                    .font(.system(.headline, design: .monospaced))
-                    .bold()
+                Text(viewModel.trayText).monospaced()
             case .image, .full:
                 if (viewModel.isFullscreen) {
                     Text("F")
-//                        .font(.system(.headline, design: .monospaced))
-//                        .bold()
                 }
                 ForEach(viewModel.trayItems, id:\.name) { item in
                     Image(systemName: item.systemImageName)
@@ -105,18 +101,9 @@ struct menuLabel: View {
                         !workspace.isEffectivelyEmpty && !viewModel.trayItems.contains(where: { item in item.name == workspace.name })
                     }
                     if !otherWorkspaces.isEmpty {
-                        Text("|")
-//                            .font(.system(.headline, design: .monospaced))
-//                            .bold()
-//                            .opacity(0.7)
-//                            .padding(.bottom, 2)
+                        Text("|").monospaced()
                         ForEach(otherWorkspaces, id:\.name) { item in
-                            Text(item.name)
-//                                .font(.system(.headline, design: .monospaced))
-//                                .bold()
-//                                .opacity(0.7)
-//                                .id(item.name)
-//                                .padding(.trailing, 2)
+                            Text(item.name).monospaced()
                         }
                     }
                 }
