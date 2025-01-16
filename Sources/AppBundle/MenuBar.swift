@@ -70,7 +70,7 @@ struct menuLabel: View {
     var body: some View {
         let renderer = ImageRenderer(content: imageContent)
         if let cgImage = renderer.cgImage {
-            Image(cgImage, scale: 1, label: Text(viewModel.trayText))
+            Image(cgImage, scale: 2, label: Text(viewModel.trayText))
                 .renderingMode(.template)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
@@ -109,7 +109,7 @@ struct menuLabel: View {
                 }
             }
         }
-        .frame(height: 20)
+        .frame(height: 40)
     }
 }
 
