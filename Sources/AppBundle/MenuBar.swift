@@ -85,10 +85,10 @@ struct menuLabel: View {
         HStack(spacing: 4) {
             switch config.menuBarStyle {
             case .text:
-                Text(viewModel.trayText).monospaced()
+                Text(viewModel.trayText).monospaced().font(.system(size:28))
             case .image, .full:
                 if (viewModel.isFullscreen) {
-                    Text("F")
+                    Text("F").font(.system(size:28))
                 }
                 ForEach(viewModel.trayItems, id:\.name) { item in
                     Image(systemName: item.systemImageName)
@@ -103,7 +103,7 @@ struct menuLabel: View {
                     if !otherWorkspaces.isEmpty {
                         Text("|").monospaced()
                         ForEach(otherWorkspaces, id:\.name) { item in
-                            Text(item.name).monospaced()
+                            Text(item.name).monospaced().font(.system(size:28))
                         }
                     }
                 }
