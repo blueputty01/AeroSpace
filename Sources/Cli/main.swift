@@ -49,7 +49,7 @@ let socket = Result { try Socket.create(family: .unix, type: .stream, proto: .un
 defer {
     socket.close()
 }
-func run(_ args: [String], stdin: String) -> ServerAnswer {
+@MainActor func run(_ args: [String], stdin: String) -> ServerAnswer {
     let request = Result { try JSONEncoder().encode(ClientRequest(args: args, stdin: stdin)) }.getOrThrow()
     Result { try socket.write(from: request) }.getOrThrow()
     Result { try Socket.wait(for: [socket], timeout: 0, waitForever: true) }.getOrThrow()
@@ -59,12 +59,8 @@ func run(_ args: [String], stdin: String) -> ServerAnswer {
     return Result { try JSONDecoder().decode(ServerAnswer.self, from: answer) }.getOrThrow()
 }
 let socketFile = "/tmp/\(aeroSpaceAppId)-\(unixUserName).sock"
-let socketFileCompat = "/tmp/\(aeroSpaceAppId).sock" // Compatibility. Drop after a few versions
 
-if let e: Error = Result(catching: { try socket.connect(to: socketFile) })
-    .flatMapError({ _ in Result(catching: { try socket.connect(to: socketFileCompat) }) })
-    .errorOrNil
-{
+if let e: Error = Result(catching: { try socket.connect(to: socketFile) }).errorOrNil {
     if isVersion {
         printVersionAndExit(serverVersion: nil)
     } else {

@@ -1,5 +1,7 @@
 import AppKit
+import Common
 
+@MainActor
 final class MacApp: AbstractApp {
     let nsApp: NSRunningApplication
     let axApp: AXUIElement
@@ -75,11 +77,15 @@ final class MacApp: AbstractApp {
         axApp.get(Ax.focusedWindowAttr)
     }
 
-    override func detectNewWindowsAndGetAll(startup: Bool) -> [Window] {
-        (axApp.get(Ax.windowsAttr) ?? []).compactMap { MacWindow.get(app: self, axWindow: $0, startup: startup) }
+    override func detectNewWindows(startup: Bool) {
+        guard let windows = axApp.get(Ax.windowsAttr, signpostEvent: name) else { return }
+        for window in windows {
+            _ = MacWindow.get(app: self, axWindow: window, startup: startup)
+        }
     }
 }
 
 extension NSRunningApplication {
+    @MainActor
     var macApp: MacApp? { MacApp.get(self) }
 }

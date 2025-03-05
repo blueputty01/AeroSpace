@@ -23,15 +23,19 @@ class AbstractApp: Hashable {
         hasher.combine(pid)
     }
 
-    func getFocusedWindow(startup: Bool) -> Window? { error("Not implemented") }
+    @MainActor func getFocusedWindow(startup: Bool) -> Window? { error("Not implemented") }
     var name: String? { nil }
     var execPath: String? { nil }
     var bundlePath: String? { nil }
-    func detectNewWindowsAndGetAll(startup: Bool) -> [Window] { error("Not implemented") }
+    @MainActor func detectNewWindows(startup: Bool) { error("Not implemented") }
 }
 
 extension AbstractApp {
     func asMacApp() -> MacApp { self as! MacApp }
+
+    func isFirefox() -> Bool {
+        ["org.mozilla.firefox", "org.mozilla.firefoxdeveloperedition", "org.mozilla.nightly"].contains(id ?? "")
+    }
 }
 
 extension Window {

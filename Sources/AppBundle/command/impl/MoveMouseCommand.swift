@@ -5,7 +5,6 @@ struct MoveMouseCommand: Command {
     let args: MoveMouseCmdArgs
 
     func run(_ env: CmdEnv, _ io: CmdIo) -> Bool {
-        check(Thread.current.isMainThread)
         let mouse = mouseLocation
         guard let target = args.resolveTargetOrReportError(env, io) else { return false }
         switch args.mouseTarget.val {
@@ -47,7 +46,7 @@ private func moveMouse(_ io: CmdIo, _ point: CGPoint) -> Bool {
     }
 }
 
-private func windowSubjectRectOrReportError(_ target: LiveFocus, _ io: CmdIo) -> Rect? {
+@MainActor private func windowSubjectRectOrReportError(_ target: LiveFocus, _ io: CmdIo) -> Rect? {
     // todo bug it's bad that we operate on the "ax physical" state directly. command seq won't work correctly
     //      focus <direction> command has the similar problem
     if let window: Window = target.windowOrNil {

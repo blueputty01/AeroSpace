@@ -5,7 +5,6 @@ struct ListWindowsCommand: Command {
     let args: ListWindowsCmdArgs
 
     func run(_ env: CmdEnv, _ io: CmdIo) -> Bool {
-        check(Thread.current.isMainThread)
         let focus = focus
         var windows: [Window] = []
 
@@ -44,7 +43,7 @@ struct ListWindowsCommand: Command {
         if args.outputOnlyCount {
             return io.out("\(windows.count)")
         } else {
-            windows = windows.sorted(using: [SelectorComparator { $0.app.name ?? "" }, SelectorComparator(selector: \.title)])
+            windows = windows.sortedBy([{ $0.app.name ?? "" }, \.title])
             let list = windows.map { AeroObj.window($0) }
             if args.json {
                 return switch list.formatToJson(args.format, ignoreRightPaddingVar: args._format.isEmpty) {

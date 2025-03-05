@@ -5,7 +5,6 @@ struct MoveCommand: Command {
     let args: MoveCmdArgs
 
     func run(_ env: CmdEnv, _ io: CmdIo) -> Bool {
-        check(Thread.current.isMainThread)
         let direction = args.direction.val
         guard let target = args.resolveTargetOrReportError(env, io) else { return false }
         guard let currentWindow = target.windowOrNil else {
@@ -39,7 +38,7 @@ struct MoveCommand: Command {
 
 private let moveOutMacosUnconventionalWindow = "moving macOS fullscreen, minimized windows and windows of hidden apps isn't yet supported. This behavior is subject to change"
 
-private func moveOut(_ io: CmdIo, window: Window, direction: CardinalDirection) -> Bool {
+@MainActor private func moveOut(_ io: CmdIo, window: Window, direction: CardinalDirection) -> Bool {
     let innerMostChild = window.parents.first(where: {
         return switch $0.parent?.cases {
             case .tilingContainer(let parent): parent.orientation == direction.orientation
@@ -81,7 +80,7 @@ private func moveOut(_ io: CmdIo, window: Window, direction: CardinalDirection) 
     return true
 }
 
-private func deepMoveIn(window: Window, into container: TilingContainer, moveDirection: CardinalDirection) {
+@MainActor private func deepMoveIn(window: Window, into container: TilingContainer, moveDirection: CardinalDirection) {
     let deepTarget = container.tilingTreeNodeCasesOrThrow().findDeepMoveInTargetRecursive(moveDirection.orientation)
     switch deepTarget {
         case .tilingContainer(let deepTarget):
@@ -96,7 +95,7 @@ private func deepMoveIn(window: Window, into container: TilingContainer, moveDir
 }
 
 private extension TilingTreeNodeCases {
-    func findDeepMoveInTargetRecursive(_ orientation: Orientation) -> TilingTreeNodeCases {
+    @MainActor func findDeepMoveInTargetRecursive(_ orientation: Orientation) -> TilingTreeNodeCases {
         return switch self {
             case .window:
                 self

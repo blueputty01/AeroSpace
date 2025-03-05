@@ -2,8 +2,9 @@ import AppKit
 import Common
 import PrivateApi
 
+@MainActor
 func checkAccessibilityPermissions() {
-    let options = [kAXTrustedCheckOptionPrompt.takeRetainedValue() as String: true]
+    let options = [axTrustedCheckOptionPrompt: true]
     if !AXIsProcessTrustedWithOptions(options as CFDictionary) {
         resetAccessibility() // Because macOS doesn't reset it for us when the app signature changes...
         terminateApp()
@@ -14,14 +15,14 @@ private func resetAccessibility() {
     _ = try? Process.run(URL(filePath: "/usr/bin/tccutil"), arguments: ["reset", "Accessibility", aeroSpaceAppId])
 }
 
-protocol ReadableAttr {
+protocol ReadableAttr: Sendable {
     associatedtype T
-    var getter: (AnyObject) -> T? { get }
+    var getter: @Sendable (AnyObject) -> T? { get }
     var key: String { get }
 }
 
-protocol WritableAttr: ReadableAttr {
-    var setter: (T) -> CFTypeRef? { get }
+protocol WritableAttr: ReadableAttr, Sendable {
+    var setter: @Sendable (T) -> CFTypeRef? { get }
 }
 
 // Quick reference:
@@ -166,13 +167,13 @@ protocol WritableAttr: ReadableAttr {
 enum Ax {
     struct ReadableAttrImpl<T>: ReadableAttr {
         var key: String
-        var getter: (AnyObject) -> T?
+        var getter: @Sendable (AnyObject) -> T?
     }
 
     struct WritableAttrImpl<T>: WritableAttr {
         var key: String
-        var getter: (AnyObject) -> T?
-        var setter: (T) -> CFTypeRef?
+        var getter: @Sendable (AnyObject) -> T?
+        var setter: @Sendable (T) -> CFTypeRef?
     }
 
     static let titleAttr = WritableAttrImpl<String>(
@@ -299,7 +300,11 @@ private func tryGetWindow(_ any: Any?) -> AXUIElement? {
 }
 
 extension AXUIElement {
-    func get<Attr: ReadableAttr>(_ attr: Attr) -> Attr.T? {
+    func get<Attr: ReadableAttr>(_ attr: Attr, signpostEvent: String? = nil, function: String = #function) -> Attr.T? {
+        let state = signposter.beginInterval("AXUIElement.get", "\(function): \(signpostEvent)")
+        defer {
+            signposter.endInterval("AXUIElement.get", state)
+        }
         var raw: AnyObject?
         return AXUIElementCopyAttributeValue(self, attr.key as CFString, &raw) == .success ? attr.getter(raw!) : nil
     }
@@ -309,7 +314,11 @@ extension AXUIElement {
         return AXUIElementSetAttributeValue(self, attr.key as CFString, value) == .success
     }
 
-    func containingWindowId() -> CGWindowID? {
+    func containingWindowId(signpostEvent: String? = nil, function: String = #function) -> CGWindowID? {
+        let state = signposter.beginInterval("AXUIElement.containingWindowId", "\(function): \(signpostEvent)")
+        defer {
+            signposter.endInterval("AXUIElement.containingWindowId", state)
+        }
         var cgWindowId = CGWindowID()
         return _AXUIElementGetWindow(self, &cgWindowId) == .success ? cgWindowId : nil
     }

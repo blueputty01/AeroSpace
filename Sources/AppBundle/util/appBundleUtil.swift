@@ -1,6 +1,9 @@
 import AppKit
 import Common
 import Foundation
+import os
+
+let signposter = OSSignposter(subsystem: aeroSpaceAppId, category: .pointsOfInterest)
 
 let lockScreenAppBundleId = "com.apple.loginwindow"
 let AEROSPACE_WINDOW_ID = "AEROSPACE_WINDOW_ID" // env var
@@ -14,11 +17,12 @@ func stringType(of some: Any) -> String {
 func interceptTermination(_ _signal: Int32) {
     signal(_signal, { signal in
         check(Thread.current.isMainThread)
-        terminationHandler.beforeTermination()
+        MainActor.assumeIsolated { terminationHandler.beforeTermination() }
         exit(signal)
     } as sig_t)
 }
 
+@MainActor
 func initTerminationHandler() {
     terminationHandler = AppServerTerminationHandler()
 }
@@ -32,20 +36,20 @@ private struct AppServerTerminationHandler: TerminationHandler {
     }
 }
 
+@MainActor
 private func makeAllWindowsVisibleAndRestoreSize() {
-    for app in apps { // Make all windows fullscreen before Quit
-        for window in app.detectNewWindowsAndGetAll(startup: false) {
-            // makeAllWindowsVisibleAndRestoreSize may be invoked when something went wrong (e.g. some windows are unbound)
-            // that's why it's not allowed to use `.parent` call in here
-            let monitor = window.getCenter()?.monitorApproximation ?? mainMonitor
-            let monitorVisibleRect = monitor.visibleRect
-            let windowSize = window.lastFloatingSize ?? CGSize(width: monitorVisibleRect.width, height: monitorVisibleRect.height)
-            let point = CGPoint(
-                x: (monitorVisibleRect.width - windowSize.width) / 2,
-                y: (monitorVisibleRect.height - windowSize.height) / 2
-            )
-            _ = window.setFrame(point, windowSize)
-        }
+    // Make all windows fullscreen before Quit
+    for (_, window) in MacWindow.allWindowsMap {
+        // makeAllWindowsVisibleAndRestoreSize may be invoked when something went wrong (e.g. some windows are unbound)
+        // that's why it's not allowed to use `.parent` call in here
+        let monitor = window.getCenter()?.monitorApproximation ?? mainMonitor
+        let monitorVisibleRect = monitor.visibleRect
+        let windowSize = window.lastFloatingSize ?? CGSize(width: monitorVisibleRect.width, height: monitorVisibleRect.height)
+        let point = CGPoint(
+            x: (monitorVisibleRect.width - windowSize.width) / 2,
+            y: (monitorVisibleRect.height - windowSize.height) / 2
+        )
+        _ = window.setFrame(point, windowSize)
     }
 }
 
@@ -53,6 +57,7 @@ extension String? {
     var isNilOrEmpty: Bool { self == nil || self?.isEmpty == true }
 }
 
+@MainActor
 var apps: [AbstractApp] {
     if isUnitTest {
         return appForTests.asList()
@@ -66,6 +71,7 @@ var apps: [AbstractApp] {
     return result
 }
 
+@MainActor
 func terminateApp() -> Never {
     NSApplication.shared.terminate(nil)
     error("Unreachable code")
@@ -146,7 +152,7 @@ extension CGSize {
     }
 }
 
-extension CGPoint: Swift.Hashable { // todo migrate to self written Point
+extension CGPoint: @retroactive Hashable { // todo migrate to self written Point
     public func hash(into hasher: inout Hasher) {
         hasher.combine(x)
         hasher.combine(y)

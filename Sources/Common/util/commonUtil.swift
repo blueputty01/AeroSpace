@@ -4,9 +4,9 @@ import Foundation
 
 public let unixUserName = NSUserName()
 public let mainModeId = "main"
-private var recursionDetectorDuringFailure: Bool = false
+private let recursionDetectorDuringTermination = MyAtomicBool(false) // todo change to Ctx?
 
-public var refreshSessionEventForDebug: RefreshSessionEvent? = nil
+// public var refreshSessionEventForDebug: RefreshSessionEvent? = nil
 
 public func errorT<T>(
     _ __message: String = "",
@@ -25,28 +25,31 @@ public func errorT<T>(
         Message: \(_message)
         Version: \(aeroSpaceAppVersion)
         Git hash: \(gitHash)
-        Date: \(Date())
+        Date: \(Date.now)
+        macOS version: \(ProcessInfo().operatingSystemVersionString)
         Coordinate: \(file):\(line):\(column) \(function)
-        recursionDetectorDuringFailure: \(recursionDetectorDuringFailure)
+        recursionDetectorDuringTermination: \(recursionDetectorDuringTermination.get())
         cli: \(isCli)
-        refreshSessionEvent: \(String(describing: refreshSessionEventForDebug))
         Displays have separate spaces: \(NSScreen.screensHaveSeparateSpaces)
 
         Stacktrace:
         \(getStringStacktrace())
         """
+    // refreshSessionEvent: \(String(describing: refreshSessionEventForDebug)) // todo return back when introduce Ctx
     if !isUnitTest && isServer {
         showMessageInGui(
-            filenameIfConsoleApp: recursionDetectorDuringFailure
+            filenameIfConsoleApp: recursionDetectorDuringTermination.get()
                 ? "aerospace-runtime-error-recursion.txt"
                 : "aerospace-runtime-error.txt",
             title: "AeroSpace Runtime Error",
             message: message
         )
     }
-    if !recursionDetectorDuringFailure {
-        recursionDetectorDuringFailure = true
-        terminationHandler.beforeTermination()
+    if !recursionDetectorDuringTermination.get() {
+        recursionDetectorDuringTermination.set(true)
+        DispatchQueue.main.asyncAndWait {
+            terminationHandler.beforeTermination()
+        }
     }
     fatalError("\n" + message)
 }

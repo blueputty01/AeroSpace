@@ -2,14 +2,15 @@
 import Common
 
 final class TestApp: AbstractApp {
-    static var shared = TestApp()
+    @MainActor
+    static let shared = TestApp()
 
     private init() {
         super.init(pid: 0, id: "bobko.AeroSpace.test-app")
     }
 
     var _windows: [Window] = []
-    override func detectNewWindowsAndGetAll(startup: Bool) -> [Window] { _windows }
+    override func detectNewWindows(startup: Bool) {}
     var windows: [Window] {
         get { _windows }
         set {

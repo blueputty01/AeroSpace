@@ -2,7 +2,8 @@ import Common
 import Foundation
 import SwiftUI
 
-public func menuBar(viewModel: TrayMenuModel) -> some Scene {
+@MainActor
+public func menuBar(viewModel: TrayMenuModel) -> some Scene { // todo should it be converted to "SwiftUI struct"?
     MenuBarExtra {
         let shortIdentification = "\(aeroSpaceAppName) v\(aeroSpaceAppVersion) \(gitShortHash)"
         let identification      = "\(aeroSpaceAppName) v\(aeroSpaceAppVersion) \(gitHash)"
@@ -52,7 +53,7 @@ public func menuBar(viewModel: TrayMenuModel) -> some Scene {
         }.keyboardShortcut("Q", modifiers: .command)
     } label: {
         if viewModel.isEnabled {
-            menuLabel(viewModel: viewModel)
+            MenuLabel(viewModel: viewModel)
                 .id(
                     "\(viewModel.workspaces.hashValue)\(viewModel.trayItems.hashValue)\(viewModel.isFullscreen.hashValue)"
                 )
@@ -64,16 +65,21 @@ public func menuBar(viewModel: TrayMenuModel) -> some Scene {
     }
 }
 
-struct menuLabel: View {
+struct MenuLabel: View {
     var viewModel: TrayMenuModel
 
     var body: some View {
-        let renderer = ImageRenderer(content: imageContent)
-        if let cgImage = renderer.cgImage {
-            Image(cgImage, scale: 2, label: Text(viewModel.trayText))
-                .renderingMode(.template)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
+        if #available(macOS 14, *) { // https://github.com/nikitabobko/AeroSpace/issues/1122
+            let renderer = ImageRenderer(content: imageContent)
+            if let cgImage = renderer.cgImage {
+                Image(cgImage, scale: 2, label: Text(viewModel.trayText))
+                    .renderingMode(.template)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            } else {
+                // In case image can't be rendered fallback to default text
+                Text(viewModel.trayText)
+            }
         } else {
             // In case image can't be rendered fallback to default text
             Text(viewModel.trayText)
