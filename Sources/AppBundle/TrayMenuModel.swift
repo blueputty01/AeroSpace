@@ -25,8 +25,6 @@ public class TrayMenuModel: ObservableObject {
             return "[\($0)] " } ?? ""
     ) +
     sortedMonitors
-    TrayMenuModel.shared.trayText = (activeMode?.takeIf { $0 != mainModeId }?.first?.lets { "[\($0.uppercased())] " } ?? "") +
-        sortedMonitors
         .map {
             items.append(TrayItem(type: .monitor, name: $0.activeWorkspace.name, isActive: $0.activeWorkspace == focus.workspace && sortedMonitors.count > 1))
             return ($0.activeWorkspace == focus.workspace && sortedMonitors.count > 1 ? "*" : "") + $0.activeWorkspace.name
