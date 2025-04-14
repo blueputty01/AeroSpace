@@ -20,17 +20,36 @@ import Foundation
     }
 
     checkAccessibilityPermissions()
-    AXUIElementSetMessagingTimeout(AXUIElementCreateSystemWide(), 1.0)
     startUnixSocketServer()
     GlobalObserver.initObserver()
-    refreshSession(.startup1, screenIsDefinitelyUnlocked: false, startup: true, body: {})
-    refreshSession(.startup2, screenIsDefinitelyUnlocked: false) {
-        if serverArgs.startedAtLogin {
-            _ = config.afterLoginCommand.runCmdSeq(.defaultEnv, .emptyStdin)
+    Task {
+        Workspace.garbageCollectUnusedWorkspaces() // init workspaces
+        _ = Workspace.all.first?.focusWorkspace()
+        try await runRefreshSessionBlocking(.startup, layoutWorkspaces: false)
+        try await runSession(.startup, .checkServerIsEnabledOrDie) {
+            smartLayoutAtStartup()
+            if serverArgs.startedAtLogin {
+                _ = try await config.afterLoginCommand.runCmdSeq(.defaultEnv, .emptyStdin)
+            }
+            _ = try await config.afterStartupCommand.runCmdSeq(.defaultEnv, .emptyStdin)
         }
-        _ = config.afterStartupCommand.runCmdSeq(.defaultEnv, .emptyStdin)
     }
 }
+
+@MainActor
+private func smartLayoutAtStartup() {
+    let workspace = focus.workspace
+    let root = workspace.rootTilingContainer
+    if root.children.count <= 3 {
+        root.layout = .tiles
+    } else {
+        root.layout = .accordion
+    }
+}
+
+@TaskLocal
+var _isStartup: Bool? = false
+var isStartup: Bool { _isStartup ?? dieT("isStartup is not initialized") }
 
 struct ServerArgs: Sendable {
     var startedAtLogin = false
@@ -72,6 +91,8 @@ private func initServerArgs() {
             case "--started-at-login":
                 _serverArgs.startedAtLogin = true
                 args = Array(args.dropFirst())
+            case "-NSDocumentRevisionsDebugMode":
+                cliError("Xcode -> Edit Scheme ... -> Options -> Document Versions -> Allow debugging when browsing versions -> false")
             default:
                 cliError("Unrecognized flag '\(args.first!)'")
         }

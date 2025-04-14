@@ -1,31 +1,34 @@
 import AppKit
 import Common
 
+@MainActor
+private var moveWithMouseTask: Task<(), any Error>? = nil
+
 func movedObs(_ obs: AXObserver, ax: AXUIElement, notif: CFString, data: UnsafeMutableRawPointer?) {
-    check(Thread.current.isMainThread)
-    let windowId = data?.window?.windowId
+    let windowId = ax.containingWindowId()
     let notif = notif as String
-    MainActor.assumeIsolated {
-        if let windowId, let window = Window.get(byId: windowId), TrayMenuModel.shared.isEnabled {
-            moveWithMouseIfTheCase(window)
+    Task { @MainActor in
+        guard let token: RunSessionGuard = .isServerEnabled else { return }
+        guard let windowId, let window = Window.get(byId: windowId), try await isManipulatedWithMouse(window) else {
+            runRefreshSession(.ax(notif), screenIsDefinitelyUnlocked: false)
+            return
         }
-        scheduleRefreshAndLayout(.ax(notif), screenIsDefinitelyUnlocked: false)
+        moveWithMouseTask?.cancel()
+        moveWithMouseTask = Task {
+            try checkCancellation()
+            try await runSession(.ax(notif), token) {
+                try await moveWithMouse(window)
+            }
+        }
     }
 }
 
 @MainActor
-private func moveWithMouseIfTheCase(_ window: Window) { // todo cover with tests
-    if window.isHiddenInCorner || // Don't allow to move windows of hidden workspaces
-        !isLeftMouseButtonDown ||
-        currentlyManipulatedWithMouseWindowId != nil && window.windowId != currentlyManipulatedWithMouseWindowId ||
-        getNativeFocusedWindow(startup: false) != window
-    {
-        return
-    }
+private func moveWithMouse(_ window: Window) async throws { // todo cover with tests
     resetClosedWindowsCache()
     switch window.parent.cases {
         case .workspace:
-            moveFloatingWindow(window)
+            try await moveFloatingWindow(window)
         case .tilingContainer:
             moveTilingWindow(window)
         case .macosMinimizedWindowsContainer, .macosFullscreenWindowsContainer,
@@ -35,8 +38,8 @@ private func moveWithMouseIfTheCase(_ window: Window) { // todo cover with tests
 }
 
 @MainActor
-private func moveFloatingWindow(_ window: Window) {
-    guard let targetWorkspace = window.getCenter()?.monitorApproximation.activeWorkspace else { return }
+private func moveFloatingWindow(_ window: Window) async throws {
+    guard let targetWorkspace = try await window.getCenter()?.monitorApproximation.activeWorkspace else { return }
     if targetWorkspace != window.parent {
         window.bindAsFloatingWindow(to: targetWorkspace)
     }
@@ -99,7 +102,7 @@ extension CGPoint {
                 tree.mostRecentChild
         }
         guard let target else { return nil }
-        return switch target.tilingTreeNodeCasesOrThrow() {
+        return switch target.tilingTreeNodeCasesOrDie() {
             case .window(let window): window
             case .tilingContainer(let container): findIn(tree: container, virtual: virtual)
         }

@@ -7,12 +7,12 @@ private let keyMappingParser: [String: any ParserProtocol<KeyMapping>] = [
     "key-notation-to-key-code": Parser(\.rawKeyNotationToKeyCode, parseKeyNotationToKeyCode),
 ]
 
-struct KeyMapping: Copyable, Equatable, Sendable {
+struct KeyMapping: ConvenienceCopyable, Equatable, Sendable {
     enum Preset: String, CaseIterable, Sendable {
         case qwerty, dvorak, colemak
     }
 
-    public init(
+    init(
         preset: Preset = .qwerty,
         rawKeyNotationToKeyCode: [String: Key] = [:]
     ) {

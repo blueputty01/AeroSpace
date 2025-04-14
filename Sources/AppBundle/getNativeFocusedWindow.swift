@@ -2,19 +2,21 @@ import AppKit
 import Common
 
 @MainActor
-var appForTests: AbstractApp? = nil
+var appForTests: (any AbstractApp)? = nil
 
 @MainActor
-private var focusedApp: AbstractApp? {
-    if isUnitTest {
-        return appForTests
-    } else {
-        check(appForTests == nil)
-        return NSWorkspace.shared.frontmostApplication?.macApp
+private var focusedApp: (any AbstractApp)? {
+    get async throws {
+        if isUnitTest {
+            return appForTests
+        } else {
+            check(appForTests == nil)
+            return try await NSWorkspace.shared.frontmostApplication.flatMapAsyncMainActor(MacApp.getOrRegister)
+        }
     }
 }
 
 @MainActor
-func getNativeFocusedWindow(startup: Bool) -> Window? {
-    focusedApp?.getFocusedWindow(startup: startup)
+func getNativeFocusedWindow() async throws -> Window? {
+    try await focusedApp?.getFocusedWindow()
 }
