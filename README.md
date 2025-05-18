@@ -1,6 +1,6 @@
 # About my fork
 
-Based on mobile-ar's (fork)[https://github.com/mobile-ar/AeroSpace/tree/feature/menu-type-options-and-monospaced] that adds at-a-glance used workspaces
+Based on mobile-ar's [fork](https://github.com/mobile-ar/AeroSpace/tree/feature/menu-type-options-and-monospaced) that adds at-a-glance used workspaces
 
 My fork adds an indicator for when the window in the current workspace is fullscreen. This allows the user to infer whether there other windows in this workspace are hidden, decreasing the mental load.
 
