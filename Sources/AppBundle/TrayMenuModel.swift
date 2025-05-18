@@ -21,10 +21,11 @@ public class TrayMenuModel: ObservableObject {
 
     TrayMenuModel.shared.trayText = (
         activeMode?.takeIf { $0 != mainModeId }?.first?.lets {
-            items.append(TrayItem(type: .mode ,name: String($0), isActive: true))
-            return "[\($0)] " } ?? ""
+            items.append(TrayItem(type: .mode, name: String($0), isActive: true))
+            return "[\($0)] "
+        } ?? ""
     ) +
-    sortedMonitors
+        sortedMonitors
         .map {
             items.append(TrayItem(type: .monitor, name: $0.activeWorkspace.name, isActive: $0.activeWorkspace == focus.workspace && sortedMonitors.count > 1))
             return ($0.activeWorkspace == focus.workspace && sortedMonitors.count > 1 ? "*" : "") + $0.activeWorkspace.name
@@ -56,15 +57,15 @@ struct TrayItem: Hashable {
 
     var systemImageName: String {
         switch type {
-        case .mode:
-            return "\(name.lowercased()).circle"
-        case .monitor:
-            let imageName = name.lowercased()
-            if isActive {
-                return "\(imageName).square.fill"
-            } else {
-                return "\(imageName).square"
-            }
+            case .mode:
+                return "\(name.lowercased()).circle"
+            case .monitor:
+                let imageName = name.lowercased()
+                if isActive {
+                    return "\(imageName).square.fill"
+                } else {
+                    return "\(imageName).square"
+                }
         }
     }
 }

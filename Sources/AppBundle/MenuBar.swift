@@ -38,13 +38,13 @@ public func menuBar(viewModel: TrayMenuModel) -> some Scene { // todo should it 
         Button("Open config in '\(editor.lastPathComponent)'") {
             let fallbackConfig: URL = FileManager.default.homeDirectoryForCurrentUser.appending(path: configDotfileName)
             switch findCustomConfigUrl() {
-            case .file(let url):
-                url.open(with: editor)
-            case .noCustomConfigExists:
-                _ = try? FileManager.default.copyItem(atPath: defaultConfigUrl.path, toPath: fallbackConfig.path)
-                fallbackConfig.open(with: editor)
-            case .ambiguousConfigError:
-                fallbackConfig.open(with: editor)
+                case .file(let url):
+                    url.open(with: editor)
+                case .noCustomConfigExists:
+                    _ = try? FileManager.default.copyItem(atPath: defaultConfigUrl.path, toPath: fallbackConfig.path)
+                    fallbackConfig.open(with: editor)
+                case .ambiguousConfigError:
+                    fallbackConfig.open(with: editor)
             }
         }.keyboardShortcut(",", modifiers: .command)
         if let token: RunSessionGuard = .isServerEnabled {
@@ -99,29 +99,29 @@ struct MenuLabel: View {
     private var imageContent: some View {
         HStack(spacing: 4) {
             switch config.menuBarStyle {
-            case .text:
-                Text(viewModel.trayText).monospaced().font(.system(size:28))
-            case .image, .full:
-                if (viewModel.isFullscreen) {
-                    Text("F").font(.system(size:28))
-                }
-                ForEach(viewModel.trayItems, id:\.name) { item in
-                    Image(systemName: item.systemImageName)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .id(item.name)
-                }
-                if config.menuBarStyle == .full {
-                    let otherWorkspaces = Workspace.all.filter { workspace in
-                        !workspace.isEffectivelyEmpty && !viewModel.trayItems.contains(where: { item in item.name == workspace.name })
+                case .text:
+                    Text(viewModel.trayText).monospaced().font(.system(size: 28))
+                case .image, .full:
+                    if (viewModel.isFullscreen) {
+                        Text("F").font(.system(size: 28))
                     }
-                    if !otherWorkspaces.isEmpty {
-                        Text("|").monospaced()
-                        ForEach(otherWorkspaces, id:\.name) { item in
-                            Text(item.name).monospaced().font(.system(size:28))
+                    ForEach(viewModel.trayItems, id: \.name) { item in
+                        Image(systemName: item.systemImageName)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .id(item.name)
+                    }
+                    if config.menuBarStyle == .full {
+                        let otherWorkspaces = Workspace.all.filter { workspace in
+                            !workspace.isEffectivelyEmpty && !viewModel.trayItems.contains(where: { item in item.name == workspace.name })
+                        }
+                        if !otherWorkspaces.isEmpty {
+                            Text("|").monospaced()
+                            ForEach(otherWorkspaces, id: \.name) { item in
+                                Text(item.name).monospaced().font(.system(size: 28))
+                            }
                         }
                     }
-                }
             }
         }
         .frame(height: 40)
@@ -147,5 +147,5 @@ extension String {
 func getTextEditorToOpenConfig() -> URL {
     NSWorkspace.shared.urlForApplication(toOpen: findCustomConfigUrl().urlOrNil ?? defaultConfigUrl)?
         .takeIf { $0.lastPathComponent != "Xcode.app" } // Blacklist Xcode. It is too heavy to open plain text files
-    ?? URL(filePath: "/System/Applications/TextEdit.app")
+        ?? URL(filePath: "/System/Applications/TextEdit.app")
 }
