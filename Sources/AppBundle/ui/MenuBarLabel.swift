@@ -13,9 +13,9 @@ struct MenuBarLabel: View {
     var isFullscreen: Bool?
 
     let hStackSpacing = CGFloat(6)
-    let itemSize = CGFloat(40)
+    let itemSize = CGFloat(36)
     let itemBorderSize = CGFloat(4)
-    let itemPadding = CGFloat(8)
+    let itemPadding = CGFloat(2)
     let itemCornerRadius = CGFloat(6)
 
     private var finalColor: Color {
@@ -54,6 +54,10 @@ struct MenuBarLabel: View {
         return ZStack {
             if let trayItems {
                 HStack(spacing: hStackSpacing) {
+                    if isFullscreen ?? false {
+                        Text("F").font(.system(size: 28))
+                            .foregroundStyle(finalColor)
+                    }
                     ForEach(trayItems, id: \.id) { item in
                         itemView(for: item)
                         if item.type == .mode {
@@ -64,9 +68,6 @@ struct MenuBarLabel: View {
                         }
                     }
                     if let workspaces {
-                        if isFullscreen ?? false {
-                            Text("F").font(.system(size: 28))
-                        }
                         let otherWorkspaces = workspaces.filter {
                             !$0.isEffectivelyEmpty && !$0.isVisible
                         }
@@ -78,9 +79,9 @@ struct MenuBarLabel: View {
                                     .bold()
                                     .padding(.bottom, 6)
                                 ForEach(otherWorkspaces, id: \.name) { item in
-                                    itemView(
-                                        for: TrayItem(
-                                            type: .workspace, name: item.name, isActive: false))
+                                    Text(item.name)
+                                        .font(.system(.largeTitle))
+                                        .foregroundStyle(finalColor)
                                 }
                             }
                             .opacity(0.6)
@@ -131,12 +132,13 @@ struct MenuBarLabel: View {
                     .foregroundStyle(finalColor)
                     .frame(height: itemSize)
                 } else {
-                    text.background {
-                        RoundedRectangle(cornerRadius: itemCornerRadius, style: .circular)
-                            .strokeBorder(lineWidth: itemBorderSize)
-                    }
-                    .foregroundStyle(finalColor)
-                    .frame(height: itemSize)
+                    text
+                        .background {
+                            RoundedRectangle(cornerRadius: itemCornerRadius, style: .circular)
+                                .strokeBorder(lineWidth: itemBorderSize)
+                        }
+                        .foregroundStyle(finalColor)
+                        .frame(height: itemSize)
                 }
             }
         }
