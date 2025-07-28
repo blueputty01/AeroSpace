@@ -20,6 +20,7 @@ if /bin/test -z "${NUKE_PATH:-}"; then
     /bin/rm -rf .deps/bin
     /bin/mkdir -p .deps/bin
 
+    add-optional-dep-to-bin asdf # build-shell-completion.sh
     add-optional-dep-to-bin bash not-outdated-bash # build-shell-completion.sh
     add-optional-dep-to-bin fish # build-shell-completion.sh
     add-optional-dep-to-bin rustc # build-shell-completion.sh
