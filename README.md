@@ -1,3 +1,20 @@
+# About my fork
+
+Based on mobile-ar's [fork](https://github.com/mobile-ar/AeroSpace/tree/feature/menu-type-options-and-monospaced) that adds at-a-glance used workspaces
+
+My fork adds an indicator for when the window in the current workspace is fullscreen. This allows the user to infer whether there other windows in this workspace are hidden, decreasing the mental load.
+
+The original readme continues below.
+
+## Installation
+
+```bash
+brew tap blueputty01/tap
+brew install aerospace
+```
+ 
+ <img src="./resources/Assets.xcassets/AppIcon.appiconset/icon.png" width="40%" height="40%" align="right">
+
 # AeroSpace Beta [![Build](https://github.com/nikitabobko/AeroSpace/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/nikitabobko/AeroSpace/actions/workflows/build.yml)
 
 <img src="./resources/Assets.xcassets/AppIcon.appiconset/icon.png" width="40%" align="right">

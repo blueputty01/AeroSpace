@@ -8,6 +8,7 @@ public class TrayMenuModel: ObservableObject {
 
     @Published var trayText: String = ""
     @Published var trayItems: [TrayItem] = []
+    @Published var isFullscreen: Bool? = nil
     /// Is "layouting" enabled
     @Published var isEnabled: Bool = true
     @Published var workspaces: [WorkspaceViewModel] = []
@@ -18,20 +19,24 @@ public class TrayMenuModel: ObservableObject {
 @MainActor func updateTrayText() {
     let sortedMonitors = sortedMonitors
     let focus = focus
-    TrayMenuModel.shared.trayText = (activeMode?.takeIf { $0 != mainModeId }?.first.map { "[\($0.uppercased())] " } ?? "") +
-        sortedMonitors
+    TrayMenuModel.shared.trayText =
+        (activeMode?.takeIf { $0 != mainModeId }?.first.map { "[\($0.uppercased())] " } ?? "")
+        + sortedMonitors
         .map {
-            ($0.activeWorkspace == focus.workspace && sortedMonitors.count > 1 ? "*" : "") + $0.activeWorkspace.name
+            ($0.activeWorkspace == focus.workspace && sortedMonitors.count > 1 ? "*" : "")
+                + $0.activeWorkspace.name
         }
         .joined(separator: " │ ")
     TrayMenuModel.shared.workspaces = Workspace.all.map {
-        let apps = $0.allLeafWindowsRecursive.map { $0.app.name?.takeIf { !$0.isEmpty } }.filterNotNil().toSet()
+        let apps = $0.allLeafWindowsRecursive.map { $0.app.name?.takeIf { !$0.isEmpty } }
+            .filterNotNil().toSet()
         let dash = " - "
-        let suffix = switch true {
+        let suffix =
+            switch true {
             case !apps.isEmpty: dash + apps.sorted().joinTruncating(separator: ", ", length: 25)
             case $0.isVisible: dash + $0.workspaceMonitor.name
             default: ""
-        }
+            }
         return WorkspaceViewModel(
             name: $0.name,
             suffix: suffix,
@@ -41,12 +46,17 @@ public class TrayMenuModel: ObservableObject {
         )
     }
     var items = sortedMonitors.map {
-        TrayItem(type: .workspace, name: $0.activeWorkspace.name, isActive: $0.activeWorkspace == focus.workspace)
+        TrayItem(
+            type: .workspace, name: $0.activeWorkspace.name,
+            isActive: $0.activeWorkspace == focus.workspace)
     }
-    let mode = activeMode?.takeIf { $0 != mainModeId }?.first.map { TrayItem(type: .mode, name: $0.uppercased(), isActive: true) }
+    let mode = activeMode?.takeIf { $0 != mainModeId }?.first.map {
+        TrayItem(type: .mode, name: $0.uppercased(), isActive: true)
+    }
     if let mode {
         items.insert(mode, at: 0)
     }
+    TrayMenuModel.shared.isFullscreen = focus.windowOrNil?.isFullscreen ?? false
     TrayMenuModel.shared.trayItems = items
 }
 
@@ -63,7 +73,7 @@ enum TrayItemType: String, Hashable {
     case workspace
 }
 
-private let validLetters = "A" ... "Z"
+private let validLetters = "A"..."Z"
 
 struct TrayItem: Hashable, Identifiable {
     let type: TrayItemType
@@ -80,14 +90,14 @@ struct TrayItem: Hashable, Identifiable {
         }
         let lowercasedName = name.lowercased()
         switch type {
-            case .mode:
-                return "\(lowercasedName).circle"
-            case .workspace:
-                if isActive {
-                    return "\(lowercasedName).square.fill"
-                } else {
-                    return "\(lowercasedName).square"
-                }
+        case .mode:
+            return "\(lowercasedName).circle"
+        case .workspace:
+            if isActive {
+                return "\(lowercasedName).square.fill"
+            } else {
+                return "\(lowercasedName).square"
+            }
         }
     }
     var id: String {

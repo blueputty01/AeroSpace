@@ -10,6 +10,7 @@ struct MenuBarLabel: View {
     var color: Color?
     var trayItems: [TrayItem]?
     var workspaces: [WorkspaceViewModel]?
+    var isFullscreen: Bool?
 
     let hStackSpacing = CGFloat(6)
     let itemSize = CGFloat(40)
@@ -21,16 +22,21 @@ struct MenuBarLabel: View {
         return color ?? (menuColorScheme == .dark ? Color.white : Color.black)
     }
 
-    init(_ text: String, textStyle: MenuBarTextStyle = .monospaced, color: Color? = nil, trayItems: [TrayItem]? = nil, workspaces: [WorkspaceViewModel]? = nil) {
+    init(
+        _ text: String, textStyle: MenuBarTextStyle = .monospaced, color: Color? = nil,
+        trayItems: [TrayItem]? = nil, workspaces: [WorkspaceViewModel]? = nil,
+        isFullscreen: Bool? = nil
+    ) {
         self.text = text
         self.textStyle = textStyle
         self.color = color
         self.trayItems = trayItems
         self.workspaces = workspaces
+        self.isFullscreen = isFullscreen
     }
 
     var body: some View {
-        if #available(macOS 14, *) { // https://github.com/nikitabobko/AeroSpace/issues/1122
+        if #available(macOS 14, *) {  // https://github.com/nikitabobko/AeroSpace/issues/1122
             let renderer = ImageRenderer(content: menuBarContent)
             if let cgImage = renderer.cgImage {
                 // Using scale: 1 results in a blurry image for unknown reasons
@@ -39,7 +45,7 @@ struct MenuBarLabel: View {
                 // In case image can't be rendered fallback to plain text
                 Text(text)
             }
-        } else { // macOS 13 and lower
+        } else {  // macOS 13 and lower
             Text(text)
         }
     }
@@ -58,7 +64,12 @@ struct MenuBarLabel: View {
                         }
                     }
                     if let workspaces {
-                        let otherWorkspaces = workspaces.filter { !$0.isEffectivelyEmpty && !$0.isVisible }
+                        if isFullscreen ?? false {
+                            Text("F").font(.system(size: 28))
+                        }
+                        let otherWorkspaces = workspaces.filter {
+                            !$0.isEffectivelyEmpty && !$0.isVisible
+                        }
                         if !otherWorkspaces.isEmpty {
                             Group {
                                 Text("|")
@@ -67,7 +78,9 @@ struct MenuBarLabel: View {
                                     .bold()
                                     .padding(.bottom, 6)
                                 ForEach(otherWorkspaces, id: \.name) { item in
-                                    itemView(for: TrayItem(type: .workspace, name: item.name, isActive: false))
+                                    itemView(
+                                        for: TrayItem(
+                                            type: .workspace, name: item.name, isActive: false))
                                 }
                             }
                             .opacity(0.6)
@@ -135,10 +148,10 @@ enum MenuBarTextStyle: String {
     case system
     var design: Font.Design {
         switch self {
-            case .monospaced:
-                return .monospaced
-            case .system:
-                return .default
+        case .monospaced:
+            return .monospaced
+        case .system:
+            return .default
         }
     }
 }
