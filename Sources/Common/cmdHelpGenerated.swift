@@ -107,6 +107,7 @@ let move_node_to_monitor_help_generated = """
     """
 let move_node_to_workspace_help_generated = """
     USAGE: move-node-to-workspace [-h|--help] [--focus-follows-window] [--wrap-around]
+                                  [--stdin|--no-stdin]
                                   (next|prev)
        OR: move-node-to-workspace [-h|--help] [--focus-follows-window] [--fail-if-noop]
                                   [--window-id <window-id>] <workspace-name>
@@ -140,14 +141,14 @@ let trigger_binding_help_generated = """
     USAGE: trigger-binding [-h|--help] <binding> --mode <mode-id>
     """
 let volume_help_generated = """
-    USAGE: volume [-h|--help] (up|down)
-       OR: volume [-h|--help] (mute-toggle|mute-off|mute-on)
-       OR: volume [-h|--help] set <number>
+    USAGE: volume [-h|--help] (up|down) [--no-gui]
+       OR: volume [-h|--help] (mute-toggle|mute-off|mute-on) [--no-gui]
+       OR: volume [-h|--help] set <number> [--no-gui]
     """
 let workspace_back_and_forth_help_generated = """
     USAGE: workspace-back-and-forth [-h|--help]
     """
 let workspace_help_generated = """
     USAGE: workspace [-h|--help] [--auto-back-and-forth] [--fail-if-noop] <workspace-name>
-       OR: workspace [-h|--help] [--wrap-around] (next|prev)
+       OR: workspace [-h|--help] [--wrap-around] [--stdin|--no-stdin] (next|prev)
     """

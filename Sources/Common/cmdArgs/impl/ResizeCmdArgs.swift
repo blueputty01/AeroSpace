@@ -1,14 +1,14 @@
 public struct ResizeCmdArgs: CmdArgs {
-    public let rawArgs: EquatableNoop<[String]>
-    fileprivate init(rawArgs: [String]) { self.rawArgs = .init(rawArgs) }
+    /*conforms*/ public var commonState: CmdArgsCommonState
+    fileprivate init(rawArgs: StrArrSlice) { self.commonState = .init(rawArgs) }
     public static let parser: CmdParser<Self> = cmdParser(
         kind: .resize,
         allowInConfig: true,
         help: resize_help_generated,
-        options: [
+        flags: [
             "--window-id": optionalWindowIdFlag(),
         ],
-        arguments: [
+        posArgs: [
             newArgParser(\.dimension, parseDimension, mandatoryArgPlaceholder: "(smart|smart-opposite|width|height)"),
             newArgParser(\.units, parseUnits, mandatoryArgPlaceholder: "[+|-]<number>"),
         ],
@@ -16,15 +16,13 @@ public struct ResizeCmdArgs: CmdArgs {
 
     public var dimension: Lateinit<ResizeCmdArgs.Dimension> = .uninitialized
     public var units: Lateinit<ResizeCmdArgs.Units> = .uninitialized
-    /*conforms*/ public var windowId: UInt32?
-    /*conforms*/ public var workspaceName: WorkspaceName?
 
     public init(
         rawArgs: [String],
         dimension: Dimension,
-        units: Units
+        units: Units,
     ) {
-        self.rawArgs = .init(rawArgs)
+        self.commonState = .init(rawArgs.slice)
         self.dimension = .initialized(dimension)
         self.units = .initialized(units)
     }
@@ -41,22 +39,22 @@ public struct ResizeCmdArgs: CmdArgs {
     }
 }
 
-public func parseResizeCmdArgs(_ args: [String]) -> ParsedCmd<ResizeCmdArgs> {
+public func parseResizeCmdArgs(_ args: StrArrSlice) -> ParsedCmd<ResizeCmdArgs> {
     parseSpecificCmdArgs(ResizeCmdArgs(rawArgs: args), args)
 }
 
-private func parseDimension(arg: String, nextArgs: inout [String]) -> Parsed<ResizeCmdArgs.Dimension> {
-    parseEnum(arg, ResizeCmdArgs.Dimension.self)
+private func parseDimension(i: ArgParserInput) -> ParsedCliArgs<ResizeCmdArgs.Dimension> {
+    .init(parseEnum(i.arg, ResizeCmdArgs.Dimension.self), advanceBy: 1)
 }
 
-private func parseUnits(arg: String, nextArgs: inout [String]) -> Parsed<ResizeCmdArgs.Units> {
-    if let number = UInt(arg.removePrefix("+").removePrefix("-")) {
+private func parseUnits(i: ArgParserInput) -> ParsedCliArgs<ResizeCmdArgs.Units> {
+    if let number = UInt(i.arg.removePrefix("+").removePrefix("-")) {
         switch true {
-            case arg.starts(with: "+"): .success(.add(number))
-            case arg.starts(with: "-"): .success(.subtract(number))
-            default: .success(.set(number))
+            case i.arg.starts(with: "+"): .succ(.add(number), advanceBy: 1)
+            case i.arg.starts(with: "-"): .succ(.subtract(number), advanceBy: 1)
+            default: .succ(.set(number), advanceBy: 1)
         }
     } else {
-        .failure("<number> argument must be a number")
+        .fail("<number> argument must be a number", advanceBy: 1)
     }
 }
