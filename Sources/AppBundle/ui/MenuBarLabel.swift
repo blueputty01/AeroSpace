@@ -8,12 +8,11 @@ struct MenuBarLabel: View {
     @EnvironmentObject var viewModel: TrayMenuModel
     let color: Color?
     let style: MenuBarStyle?
-    var isFullscreen: Bool?
 
     let hStackSpacing = CGFloat(6)
-    let itemSize = CGFloat(36)
+    let itemSize = CGFloat(40)
     let itemBorderSize = CGFloat(3)
-    let itemPadding = CGFloat(2)
+    let itemPadding = CGFloat(8)
     let itemCornerRadius = CGFloat(6)
 
     private var finalColor: Color {
@@ -26,7 +25,7 @@ struct MenuBarLabel: View {
     }
 
     var body: some View {
-        if #available(macOS 14, *) {  // https://github.com/nikitabobko/AeroSpace/issues/1122
+        if #available(macOS 14, *) { // https://github.com/nikitabobko/AeroSpace/issues/1122
             let renderer = ImageRenderer(content: menuBarContent)
             if let cgImage = renderer.cgImage {
                 // Using scale: 1 results in a blurry image for unknown reasons
@@ -35,17 +34,13 @@ struct MenuBarLabel: View {
                 // In case image can't be rendered fallback to plain text
                 Text(viewModel.trayText)
             }
-        } else {  // macOS 13 and lower
+        } else { // macOS 13 and lower
             Text(viewModel.trayText)
         }
     }
 
     var menuBarContent: some View {
         return HStack(spacing: hStackSpacing) {
-            if isFullscreen ?? false {
-                Text("F").font(.system(size: 28))
-                    .foregroundStyle(finalColor)
-            }
             let style = style ?? viewModel.experimentalUISettings.displayStyle
             switch style {
                 case .monospacedText: getText(for: .monospaced)

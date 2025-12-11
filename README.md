@@ -1,19 +1,10 @@
-# About my fork
+# About fork
 
-Based on mobile-ar's [fork](https://github.com/mobile-ar/AeroSpace/tree/feature/menu-type-options-and-monospaced) that adds at-a-glance used workspaces
+My fork used to add an indicator for when the window in the current workspace is fullscreen, as well as indicators for active workspaces in general. This allows the user to infer whether there other windows in this workspace are hidden, decreasing the mental load. Both these features have now been implemented upstream.
 
-My fork adds an indicator for when the window in the current workspace is fullscreen. This allows the user to infer whether there other windows in this workspace are hidden, decreasing the mental load.
+This repository therefore serves as an artifact of my development with Swift as well as a possible entry point for any of my future customizations.
 
 The original readme continues below.
-
-## Installation
-
-```bash
-brew tap blueputty01/tap
-brew install aerospace
-```
- 
- <img src="./resources/Assets.xcassets/AppIcon.appiconset/icon.png" width="40%" height="40%" align="right">
 
 # AeroSpace Beta [![Build](https://github.com/nikitabobko/AeroSpace/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/nikitabobko/AeroSpace/actions/workflows/build.yml)
 
@@ -22,10 +13,12 @@ brew install aerospace
 AeroSpace is an i3-like tiling window manager for macOS
 
 Videos:
+
 - [YouTube 91 sec Demo](https://www.youtube.com/watch?v=UOl7ErqWbrk)
 - [YouTube Guide by Josean Martinez](https://www.youtube.com/watch?v=-FoWClVHG5g)
 
 Docs:
+
 - [AeroSpace Guide](https://nikitabobko.github.io/AeroSpace/guide)
 - [AeroSpace Commands](https://nikitabobko.github.io/AeroSpace/commands)
 - [AeroSpace Goodies](https://nikitabobko.github.io/AeroSpace/goodies)
@@ -35,18 +28,20 @@ Docs:
 Public Beta. AeroSpace can be used as a daily driver, but expect breaking changes until 1.0 is reached.
 
 What stops us from 1.0 release:
+
 - [x] https://github.com/nikitabobko/AeroSpace/issues/131 Performance. Implement thread-per-application to circumvent macOS blocking AX API.
 - [ ] https://github.com/nikitabobko/AeroSpace/issues/1215 _Big refactoring_. Rewrite mutable double-linked core tree data structure to immutable single-linked persistent tree.
-  Important for: stability and potential performance
+      Important for: stability and potential performance
   - [ ] https://github.com/nikitabobko/AeroSpace/issues/1216 The big refactoring will help us to fix stability issue that windows may randomly jump to the focused workspace
   - [ ] https://github.com/nikitabobko/AeroSpace/issues/68 The big refactoring will help us to support macOS native tabs
 - [ ] https://github.com/nikitabobko/AeroSpace/issues/278 Implement shell-like combinators.
-  Ignore a lot of crazy fuss in the issue,
-  We are most probably going with the minimal approach to only introduce common shell-combinators: `||`, `&&`, `;` and `eval` command to send multiple commands in one go.
+      Ignore a lot of crazy fuss in the issue,
+      We are most probably going with the minimal approach to only introduce common shell-combinators: `||`, `&&`, `;` and `eval` command to send multiple commands in one go.
 - [ ] https://github.com/nikitabobko/AeroSpace/issues/1012 Investigate a possibility to use `CGEvent.tapCreate` API for global hotkeys
   - [ ] https://github.com/nikitabobko/AeroSpace/issues/28 Maybe it will allow to distinguish left and right modifiers. Maybe not
 
 Big and important issues which will go after 1.0 release:
+
 - [ ] https://github.com/nikitabobko/AeroSpace/issues/2 sticky windows
 - [ ] https://github.com/nikitabobko/AeroSpace/issues/260 Dynamic TWM
 
@@ -97,28 +92,29 @@ Community discussions happen at GitHub Discussions.
 There you can discuss bugs, propose new features, ask your questions, show off your setup, or just chat.
 
 There are 7 channels:
--   [#all](https://github.com/nikitabobko/AeroSpace/discussions).
-    [RSS](https://github.com/nikitabobko/AeroSpace/discussions.atom?discussions_q=sort%3Adate_created).
-    Feed with all discussions.
--   [#announcements](https://github.com/nikitabobko/AeroSpace/discussions/categories/announcements).
-    [RSS](https://github.com/nikitabobko/AeroSpace/discussions/categories/announcements.atom?discussions_q=category%3Aannouncements+sort%3Adate_created).
-    Only maintainers can post here.
-    Highly moderated traffic.
--   [#announcements-releases](https://github.com/nikitabobko/AeroSpace/discussions/categories/announcements-releases).
-    [RSS](https://github.com/nikitabobko/AeroSpace/discussions/categories/announcements-releases.atom?discussions_q=category%3Aannouncements-releases+sort%3Adate_created).
-    Announcements about non-patch releases.
-    Only maintainers can post here.
--   [#feature-ideas](https://github.com/nikitabobko/AeroSpace/discussions/categories/feature-ideas).
-    [RSS](https://github.com/nikitabobko/AeroSpace/discussions/categories/feature-ideas.atom?discussions_q=category%3Afeature-ideas+sort%3Adate_created).
--   [#general](https://github.com/nikitabobko/AeroSpace/discussions/categories/general).
-    [RSS](https://github.com/nikitabobko/AeroSpace/discussions/categories/general.atom?discussions_q=sort%3Adate_created+category%3Ageneral).
--   [#potential-bugs](https://github.com/nikitabobko/AeroSpace/discussions/categories/potential-bugs).
-    [RSS](https://github.com/nikitabobko/AeroSpace/discussions/categories/potential-bugs.atom?discussions_q=category%3Apotential-bugs+sort%3Adate_created).
-    If you think that you have encountered a bug, you can discuss your bugs here.
--   [#questions-and-answers](https://github.com/nikitabobko/AeroSpace/discussions/categories/questions-and-answers).
-    [RSS](https://github.com/nikitabobko/AeroSpace/discussions/categories/questions-and-answers.atom?discussions_q=category%3Aquestions-and-answers+sort%3Adate_created).
-    Everyone is welcome to ask questions.
-    Everyone is encouraged to answer other people's questions.
+
+- [#all](https://github.com/nikitabobko/AeroSpace/discussions).
+  [RSS](https://github.com/nikitabobko/AeroSpace/discussions.atom?discussions_q=sort%3Adate_created).
+  Feed with all discussions.
+- [#announcements](https://github.com/nikitabobko/AeroSpace/discussions/categories/announcements).
+  [RSS](https://github.com/nikitabobko/AeroSpace/discussions/categories/announcements.atom?discussions_q=category%3Aannouncements+sort%3Adate_created).
+  Only maintainers can post here.
+  Highly moderated traffic.
+- [#announcements-releases](https://github.com/nikitabobko/AeroSpace/discussions/categories/announcements-releases).
+  [RSS](https://github.com/nikitabobko/AeroSpace/discussions/categories/announcements-releases.atom?discussions_q=category%3Aannouncements-releases+sort%3Adate_created).
+  Announcements about non-patch releases.
+  Only maintainers can post here.
+- [#feature-ideas](https://github.com/nikitabobko/AeroSpace/discussions/categories/feature-ideas).
+  [RSS](https://github.com/nikitabobko/AeroSpace/discussions/categories/feature-ideas.atom?discussions_q=category%3Afeature-ideas+sort%3Adate_created).
+- [#general](https://github.com/nikitabobko/AeroSpace/discussions/categories/general).
+  [RSS](https://github.com/nikitabobko/AeroSpace/discussions/categories/general.atom?discussions_q=sort%3Adate_created+category%3Ageneral).
+- [#potential-bugs](https://github.com/nikitabobko/AeroSpace/discussions/categories/potential-bugs).
+  [RSS](https://github.com/nikitabobko/AeroSpace/discussions/categories/potential-bugs.atom?discussions_q=category%3Apotential-bugs+sort%3Adate_created).
+  If you think that you have encountered a bug, you can discuss your bugs here.
+- [#questions-and-answers](https://github.com/nikitabobko/AeroSpace/discussions/categories/questions-and-answers).
+  [RSS](https://github.com/nikitabobko/AeroSpace/discussions/categories/questions-and-answers.atom?discussions_q=category%3Aquestions-and-answers+sort%3Adate_created).
+  Everyone is welcome to ask questions.
+  Everyone is encouraged to answer other people's questions.
 
 ## Development
 
@@ -127,6 +123,7 @@ A notes on how to setup the project, build it, how to run the tests, etc. can be
 ## Project values
 
 **Values**
+
 - AeroSpace is targeted at advanced users and developers
 - Keyboard centric
 - Breaking changes (configuration files, CLI, behavior) are avoided as much as possible, but it must not let the software stagnate.
@@ -144,6 +141,7 @@ A notes on how to setup the project, build it, how to run the tests, etc. can be
   - The goal is to make AeroSpace easily maintainable, and resistant to macOS updates.
 
 **Non Values**
+
 - Play nicely with existing macOS features.
   If limitations are imposed then AeroSpace won't play nicely with existing macOS features
   (For example, AeroSpace doesn't acknowledge the existence of macOS Spaces, and it uses [emulation of its own workspaces](https://nikitabobko.github.io/AeroSpace/guide#emulation-of-virtual-workspaces))
@@ -155,11 +153,11 @@ A notes on how to setup the project, build it, how to run the tests, etc. can be
 
 ## macOS compatibility table
 
-|                                                                                | macOS 13 (Ventura) | macOS 14 (Sonoma) | macOS 15 (Sequoia) | macOS 26 (Tahoe) |
-| ------------------------------------------------------------------------------ | ------------------ | ----------------- | ------------------ | ---------------- |
-| AeroSpace binary runs on ...                                                   | +                  | +                 | +                  | +                |
-| AeroSpace debug build from sources is supported on ...                         |                    | +                 | +                  | +                |
-| AeroSpace release build from sources is supported on ... (Requires Xcode 26+)  |                    |                   | +                  | +                |
+|                                                                               | macOS 13 (Ventura) | macOS 14 (Sonoma) | macOS 15 (Sequoia) | macOS 26 (Tahoe) |
+| ----------------------------------------------------------------------------- | ------------------ | ----------------- | ------------------ | ---------------- |
+| AeroSpace binary runs on ...                                                  | +                  | +                 | +                  | +                |
+| AeroSpace debug build from sources is supported on ...                        |                    | +                 | +                  | +                |
+| AeroSpace release build from sources is supported on ... (Requires Xcode 26+) |                    |                   | +                  | +                |
 
 ## Sponsorship
 

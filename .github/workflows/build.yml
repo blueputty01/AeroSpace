@@ -4,8 +4,11 @@ on:
   push:
     branches:
       - 'main'
+      - 'rr/**' # "rr" stands for "remote run"
   pull_request:
     branches: [ "main" ]
+  schedule:
+    - cron: '0 0 * * *' # every day at 00:00
 
 jobs:
 
