@@ -1,5 +1,5 @@
 // FILE IS GENERATED FROM docs/aerospace-*.adoc files
-// TO REGENERATE THE FILE RUN generate.sh --all
+// TO REGENERATE THE FILE RUN generate.sh
 
 let balance_sizes_help_generated = """
     USAGE: balance-sizes [-h|--help] [--workspace <workspace>]
@@ -39,10 +39,10 @@ let focus_monitor_help_generated = """
        OR: focus-monitor [-h|--help] <monitor-pattern>...
     """
 let focus_help_generated = """
-    USAGE: focus [-h|--help] [--ignore-floating]
+    USAGE: focus [-h|--help] [--ignore-floating] [--wrap-around]
                  [--boundaries <boundary>] [--boundaries-action <action>]
                  (left|down|up|right)
-       OR: focus [-h|--help] [--ignore-floating]
+       OR: focus [-h|--help] [--ignore-floating] [--wrap-around]
                  [--boundaries <boundary>] [--boundaries-action <action>]
                  (dfs-next|dfs-prev)
        OR: focus [-h|--help] --window-id <window-id>
