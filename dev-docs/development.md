@@ -57,6 +57,8 @@ If you only plan to build the debug version of AeroSpace, you can run it from th
     This script is "work in progress".
     Use it on your own risk.
 
+- `install-release.sh` - Moves the release build from `.release` dir to `/Applications/AeroSpace.app`.
+
 ## IDE
 
 -   You can obviously [open the project in Xcode](#xcode).
